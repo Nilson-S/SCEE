@@ -96,14 +96,13 @@ def usuarios_lista(request):
 @login_required
 @csrf_exempt
 def index(request):
-    #  Redirigir admins automáticamente a la gestión de usuarios
     if es_admin(request.user):
         return redirect("usuarios_lista")
 
     tasa = obtener_tasa_dia()
     error = ""
     comando_generado = False
-    kg = request.POST.get("kg", "" )
+    kg = request.POST.get("kg", "")
     tkt = request.POST.get("tkt", "")
     modo = request.POST.get("modo", "usd")
     tasa_manual = request.POST.get("tasa_manual", "")
@@ -117,13 +116,12 @@ def index(request):
 
     if request.method == "POST":
         try:
-            if not kg or not tkt:
-                raise ValueError("Debe ingresar todos los campos obligatorios.")
-            kg_int = int(kg)
+            if not tkt:
+                raise ValueError("Debe ingresar el número de boleto.")
             tkt_int = int(tkt)
 
             if modo == "usd":
-                # USD/VES básico (1 USD/kg)
+                kg_int = int(kg)
                 valor_usd = 1
                 resultado_usd, total_usd = calcular_total(kg_int, valor_usd, tkt_int, "USD")
 
@@ -140,7 +138,7 @@ def index(request):
                 )
 
             elif modo == "lrv":
-                # LRV USD/VES (3 USD/kg)
+                kg_int = int(kg)
                 resultado_usd, total_usd = calcular_total(kg_int, 3, tkt_int, "USD")
 
                 if tasa:
@@ -160,6 +158,7 @@ def index(request):
                 )
 
             elif modo == "tarifa_base":
+                kg_int = int(kg)
                 if not tarifa_base_valor:
                     raise ValueError("Debe ingresar la tarifa base.")
                 valor = float(tarifa_base_valor) * 0.01
@@ -167,8 +166,36 @@ def index(request):
                 comando_generado = True
 
             elif modo == "mascota":
-                resultado_ves, total_ves = calcular_total(1, tasa * 50, tkt_int, "VES")
+                # Modo mascota: 50 USD por mascota (1P)
+                kg_int = 1
+                valor_mascota_usd = 50
+
+                # Comando USD
+                impuesto_3_usd = valor_mascota_usd * 0.03
+                impuesto_16_usd = valor_mascota_usd * 0.16
+                total_usd = valor_mascota_usd + impuesto_3_usd + impuesto_16_usd
+                resultado_usd = f"WX*XB1P{valor_mascota_usd:.2f}USD*TX{impuesto_3_usd:.2f}6D/{impuesto_16_usd:.2f}YN*ET/{tkt_int}/E1*S1*N1*FCA"
+
+                # Comando VES
+                if tasa:
+                    valor_mascota_ves = tasa * 50
+                else:
+                    if not tasa_manual:
+                        raise ValueError("Debe ingresar una tasa manual si no se obtiene la tasa automática.")
+                    valor_mascota_ves = float(tasa_manual) * 50
+
+                impuesto_16_ves = valor_mascota_ves * 0.16
+                total_ves = valor_mascota_ves + impuesto_16_ves
+                resultado_ves = f"WX*XB1P{valor_mascota_ves:.2f}VES*TX{impuesto_16_ves:.2f}YN*ET/{tkt_int}/E1*S1*F.MA"
+
                 comando_generado = True
+
+                HistorialComando.objects.create(
+                    usuario=request.user,
+                    comando=f"Generó comandos Mascota USD/VES para boleto {tkt_int}",
+                    fecha=datetime.today().date(),
+                    hora=datetime.now().strftime("%H:%M:%S")
+                )
 
             else:
                 raise ValueError("Modo de cálculo inválido.")
@@ -194,7 +221,6 @@ def index(request):
         "tarifa_base_moneda": tarifa_base_moneda,
         "now": datetime.now()
     })
-
 # Inhabilitar usuario
 @login_required
 @user_passes_test(es_admin)

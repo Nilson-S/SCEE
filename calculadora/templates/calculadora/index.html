@@ -22,17 +22,29 @@
             background: none;
             border: none;
             cursor: pointer;
-            color: #FF8C00;
-            font-size: 1.2rem;
-            margin-left: 8px;
+            padding: 2;
+            margin: 2;
+            font-size: 0;
+            /* Oculta cualquier espacio de fuente alrededor */
+            vertical-align: middle;
+            line-height: 1;
+            display: inline-block;
         }
 
-        .copy-btn:hover {
+        .copy-btn i {
+            font-size: 20px;
+            color: #FF8C00;
+        }
+
+        .copy-btn i:hover {
             color: #e67600;
         }
 
-        .copy-btn:focus {
-            outline: none;
+        pre {
+            display: inline;
+            margin: 0;
+            padding: 0;
+            font-family: monospace;
         }
     </style>
 </head>
@@ -64,7 +76,7 @@
             {% csrf_token %}
 
             <label for="kg">Cantidad de kilogramos (Kg):</label>
-            <input type="number" name="kg" id="kg" min="1"  required value="{{ kg|default:'1' }}">
+            <input type="number" name="kg" id="kg" min="1" required value="{{ kg|default:'1' }}">
 
             <label for="tkt">Número de boleto:</label>
             <input type="number" name="tkt" id="tkt" min="3080" required value="{{ tkt|default:'3080' }}">
@@ -95,7 +107,7 @@
                 <label class="modo-tarjeta">
                     <input type="radio" name="modo" value="mascota" {% if modo == "mascota" %}checked{% endif %}>
                     <div class="contenido">
-                        <strong>Mascota Bs</strong><span>50USD</span>
+                        <strong>Mascota</strong><span>50USD</span>
                     </div>
                 </label>
             </div>
@@ -133,7 +145,8 @@
         <div class="resultado" id="resultado-usd">
             <div class="subtitulo">Comando USD:</div>
             <pre id="comando-usd">{{ resultado_usd }}</pre>
-            <button class="copy-btn" onclick="copiarComando('comando-usd')"><i class="fas fa-copy"></i></button>
+            <span class="copy-btn" onclick="copiarComando('comando-usd')" title="Copiar"><i
+                    class="fas fa-copy"></i></span>
             <div class="total-a-pagar">Total USD: {{ total_usd|floatformat:2 }}</div>
         </div>
         {% endif %}
@@ -142,7 +155,8 @@
         <div class="resultado" id="resultado-ves">
             <div class="subtitulo">Comando VES:</div>
             <pre id="comando-ves">{{ resultado_ves }}</pre>
-            <button class="copy-btn" onclick="copiarComando('comando-ves')"><i class="fas fa-copy"></i></button>
+            <span class="copy-btn" onclick="copiarComando('comando-ves')" title="Copiar"><i
+                    class="fas fa-copy"></i></span>
             <div class="total-a-pagar">Total Bs: {{ total_ves|floatformat:2 }}</div>
         </div>
         {% endif %}
@@ -158,9 +172,9 @@
         function copiarComando(id) {
             const comando = document.getElementById(id).innerText;
             navigator.clipboard.writeText(comando).then(() => {
-                alert("Comando copiado al portapapeles 📋");
+                console.log("✅ Comando copiado al portapapeles.");
             }).catch(err => {
-                alert("No se pudo copiar el comando");
+                console.error("❌ No se pudo copiar el comando.");
             });
         }
 
