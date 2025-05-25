@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}Historial de Tasas del Día{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="card shadow-sm">
+        <div class="card-header bg-warning text-white text-center">
+            <h4 class="mb-0">Historial de Tasa del Día</h4>
+        </div>
+        <div class="card-body">
+            <table class="table table-bordered table-striped text-center">
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Valor (Bs/USD)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for tasa in page_obj %}
+                    <tr>
+                        <td>{{ tasa.fecha }}</td>
+                        <td>{{ tasa.valor|floatformat:2  }} Bs</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="2">No hay tasas registradas.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <nav class="mt-4">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Anterior</a>
+                    </li>
+                    {% endif %}
+
+                    <li class="page-item disabled">
+                        <span class="page-link">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+                    </li>
+
+                    {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}">Siguiente</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
+                <div class="card-footer bg-light text-center">
+                    <a href="{% url 'usuarios_lista' %}" class="btn btn-outline-secondary">⬅ Volver a la lista</a>
+                </div>
+{% endblock %}

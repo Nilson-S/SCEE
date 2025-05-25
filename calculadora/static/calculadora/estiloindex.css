@@ -1,0 +1,281 @@
+body {
+    background-image: url("{% static 'calculadora/portada.jpg' %}");
+    background-size: cover;
+    /* Ajusta la imagen para cubrir todo el fondo */
+    background-position: center center;
+    /* Centra la imagen */
+    background-repeat: no-repeat;
+    /* Evita que se repita */
+    background-attachment: fixed;
+    /* Fija la imagen mientras se hace scroll */
+    background-color: #ffffff;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    position: relative;
+}
+
+.header {
+    background-color: #FF8C00;
+    color: white;
+    padding: 10px 20px;
+    width: 100%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+    margin-bottom: 15px;
+    /* separación con el contenido */
+}
+
+.header-contenido {
+    max-width: 960px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    font-size: 14px;
+}
+
+.logout-btn {
+    background-color: white;
+    color: #FF8C00;
+    padding: 6px 12px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background-color 0.3s;
+    border: none;
+}
+
+.logout-btn:hover {
+    background-color: #ffe1c4;
+}
+
+.tasa-inferior {
+    position: fixed;
+    bottom: 60px;
+    right: 20px;
+    background-color: #FF8C00;
+    color: #ffffff;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+}
+
+.container {
+    background-color: #fefefe;
+    border: 1px solid #eee;
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 10px 10px 10px 10px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    max-width: 580px;
+    margin-top: 30px;
+    animation: fadeIn 0.7s ease-in;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+h1 {
+    text-align: center;
+    color: #FF8C00;
+    margin-bottom: 20px;
+    font-size: 23px;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+input,
+select {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 18px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+}
+
+button {
+    background-color: #FF8C00;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    font-size: 15px;
+    border-radius: 5px;
+    width: 100%;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #e67600;
+}
+
+.modo-opciones {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.modo-tarjeta {
+    position: relative;
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    background-color: #fafafa;
+    text-align: center;
+    cursor: pointer;
+    padding: 12px 8px;
+    transition: all 0.3s ease-in-out;
+    font-size: 13px;
+}
+
+.modo-tarjeta:hover {
+    border-color: #FF8C00;
+    background-color: #fff3e0;
+}
+
+.modo-tarjeta input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.modo-tarjeta .contenido {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.modo-tarjeta strong {
+    font-size: 14px;
+    margin-bottom: 3px;
+    color: #333;
+}
+
+.modo-tarjeta span {
+    font-size: 11px;
+    color: #777;
+}
+
+.modo-tarjeta input[type="radio"]:checked~.contenido strong {
+    color: #FF8C00;
+}
+
+.nota-tasa {
+    font-size: 12px;
+    color: #666;
+    margin-top: -10px;
+    margin-bottom: 10px;
+}
+
+.resultado {
+    background-color: #fff8f0;
+    border: 1px dashed #ffa726;
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 20px;
+    font-size: 14px;
+    text-align: center;
+}
+
+.total-a-pagar {
+    font-size: 20px;
+    color: #FF8C00;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+footer.footer {
+    background-color: #f4f4f4;
+    color: #555;
+    font-size: 13px;
+    padding: 12px;
+    width: 100%;
+    text-align: center;
+    border-top: 1px solid #ddd;
+    margin-top: auto;
+    /* Lo empuja al fondo si hay poco contenido */
+}
+
+.alerta {
+    display: flex;
+    align-items: center;
+    color: #d84315;
+    background-color: #fff3e0;
+    border: 1px solid #945f4f;
+    border-radius: 5px;
+    padding: 15px;
+    margin-bottom: auto;
+    margin-top: 15px;
+    animation: blink 1s infinite alternate;
+
+}
+
+/* Estilos para la sección de redes sociales en el footer */
+.footer .redes-sociales {
+    display: flex;
+    gap: 10px;
+    /* Espacio entre los iconos */
+    margin-left: 50%;
+    /* Espacio a la izquierda del texto */
+}
+
+.footer .redes-sociales a {
+    text-decoration: none;
+    /* Elimina el subrayado */
+}
+
+
+
+.footer .redes-sociales img {
+    vertical-align: middle;
+    /* Alinea verticalmente los iconos con el texto */
+    opacity: 0.7;
+    /* Reduce un poco la opacidad inicialmente */
+    transition: opacity 0.3s ease-in-out;
+    /* Transición suave de opacidad */
+}
+
+.footer .redes-sociales img:hover {
+    opacity: 1;
+    /* Opacidad completa al pasar el ratón */
+}
+
+/* Ajusta el espaciado del footer si es necesario */
+.footer>span {
+    margin-right: 20px;
+    /* Añade espacio entre el texto y los iconos */
+}
+
+@keyframes blink {
+    from {
+        opacity: 0.8;
+    }
+
+    to {
+        opacity: 1;
+    }
+}

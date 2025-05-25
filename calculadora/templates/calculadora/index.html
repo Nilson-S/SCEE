@@ -1,0 +1,206 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Sistema de Cálculo de Exceso de Equipaje (SCEE)</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+        crossorigin="anonymous" />
+    <link rel="stylesheet" href="{% static 'calculadora/estiloindex.css' %}">
+    <style>
+        body {
+            background-image: url("{% static 'calculadora/fondo.png' %}");
+        }
+
+        .header {
+            background-color: #ffffff;
+            color: rgb(12, 12, 12);
+        }
+
+        .copy-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #FF8C00;
+            font-size: 1.2rem;
+            margin-left: 8px;
+        }
+
+        .copy-btn:hover {
+            color: #e67600;
+        }
+
+        .copy-btn:focus {
+            outline: none;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="header">
+        <div>
+            <img src="{% static 'calculadora/iconos/cintillo.jpg' %}" alt="buscar imagen" class="img-fluid"
+                style="max-width: 80%; max-height: 100%; display: block; margin-left: 150px;">
+        </div>
+        <div class="header-contenido">
+            <span>👋 Bienvenido, <strong>{{ user.get_username }}</strong></span>
+            <span>📅 {{ now|date:"d/m/Y" }}</span>
+            {% if user.groups.first.name == "Administrador" or user.is_superuser %}
+            <p class="mb-0"><a href="{% url 'usuarios_lista' %}" class="text-white text-decoration-none">👤 Gestión de
+                    Usuarios</a></p>
+            {% endif %}
+            <form action="{% url 'logout' %}" method="post" style="display: inline;">
+                {% csrf_token %}
+                <button type="submit" class="logout-btn">Cerrar sesión</button>
+            </form>
+        </div>
+    </header>
+
+    <div class="container">
+        <h1>Sistema de Cálculo de Exceso de Equipaje (SCEE)</h1>
+
+        <form method="POST">
+            {% csrf_token %}
+
+            <label for="kg">Cantidad de kilogramos (Kg):</label>
+            <input type="number" name="kg" id="kg" min="1"  required value="{{ kg|default:'1' }}">
+
+            <label for="tkt">Número de boleto:</label>
+            <input type="number" name="tkt" id="tkt" min="3080" required value="{{ tkt|default:'3080' }}">
+
+            <label>Modo de cálculo:</label>
+            <div class="modo-opciones">
+                <label class="modo-tarjeta">
+                    <input type="radio" name="modo" value="usd" {% if modo == 'usd' %}checked{% endif %}>
+                    <div class="contenido">
+                        <strong>USD/VES</strong><span>1 USD/Kg</span>
+                    </div>
+                </label>
+
+                <label class="modo-tarjeta">
+                    <input type="radio" name="modo" value="tarifa_base" {% if modo == 'tarifa_base' %}checked{% endif %}>
+                    <div class="contenido">
+                        <strong>Tarifa Base</strong><span>1% boleto</span>
+                    </div>
+                </label>
+
+                <label class="modo-tarjeta">
+                    <input type="radio" name="modo" value="lrv" {% if modo == 'lrv' %}checked{% endif %}>
+                    <div class="contenido">
+                        <strong>LRV USD/VES</strong><span>3 USD/Kg</span>
+                    </div>
+                </label>
+
+                <label class="modo-tarjeta">
+                    <input type="radio" name="modo" value="mascota" {% if modo == "mascota" %}checked{% endif %}>
+                    <div class="contenido">
+                        <strong>Mascota Bs</strong><span>50USD</span>
+                    </div>
+                </label>
+            </div>
+
+            {% if not tasa %}
+            <div id="manual-tasa" style="display: {% if modo == 'ves' %}block{% else %}none{% endif %};">
+                <label for="tasa_manual">Introduzca la Tasa del Dólar Manual:</label>
+                <input type="text" name="tasa_manual" id="tasa_manual" value="{{ tasa_manual|default:'' }}">
+                <div class="nota-tasa">⚠️ Verifique su conexión a internet</div>
+            </div>
+            {% endif %}
+
+            <div id="tarifa-base-campos" style="display: {% if modo == 'tarifa_base' %}block{% else %}none{% endif %};">
+                <label for="tarifa_base_valor">Tarifa base del boleto:</label>
+                <input type="number" step="0.01" name="tarifa_base_valor" id="tarifa_base_valor"
+                    value="{{ tarifa_base_valor|default:'' }}">
+
+                <label for="tarifa_base_moneda">Moneda de la tarifa:</label>
+                <select name="tarifa_base_moneda" id="tarifa_base_moneda">
+                    <option value="USD" {% if tarifa_base_moneda == 'USD' %}selected{% endif %}>USD</option>
+                    <option value="VES" {% if tarifa_base_moneda == 'VES' %}selected{% endif %}>VES</option>
+                </select>
+            </div>
+
+            <button type="submit">Calcular Comando</button>
+        </form>
+
+        {% if error %}
+        <div class="alerta">
+            <span>❗ {{ error }}</span>
+        </div>
+        {% endif %}
+
+        {% if resultado_usd %}
+        <div class="resultado" id="resultado-usd">
+            <div class="subtitulo">Comando USD:</div>
+            <pre id="comando-usd">{{ resultado_usd }}</pre>
+            <button class="copy-btn" onclick="copiarComando('comando-usd')"><i class="fas fa-copy"></i></button>
+            <div class="total-a-pagar">Total USD: {{ total_usd|floatformat:2 }}</div>
+        </div>
+        {% endif %}
+
+        {% if resultado_ves %}
+        <div class="resultado" id="resultado-ves">
+            <div class="subtitulo">Comando VES:</div>
+            <pre id="comando-ves">{{ resultado_ves }}</pre>
+            <button class="copy-btn" onclick="copiarComando('comando-ves')"><i class="fas fa-copy"></i></button>
+            <div class="total-a-pagar">Total Bs: {{ total_ves|floatformat:2 }}</div>
+        </div>
+        {% endif %}
+    </div>
+
+    {% if tasa %}
+    <div class="tasa-inferior">
+        💱 Tasa del día: {{ tasa|floatformat:2 }} Bs
+    </div>
+    {% endif %}
+
+    <script>
+        function copiarComando(id) {
+            const comando = document.getElementById(id).innerText;
+            navigator.clipboard.writeText(comando).then(() => {
+                alert("Comando copiado al portapapeles 📋");
+            }).catch(err => {
+                alert("No se pudo copiar el comando");
+            });
+        }
+
+        function toggleCamposAdicionales(modo) {
+            const manualDiv = document.getElementById("manual-tasa");
+            const tarifaDiv = document.getElementById("tarifa-base-campos");
+            if (manualDiv) manualDiv.style.display = (modo === "ves") ? "block" : "none";
+            if (tarifaDiv) tarifaDiv.style.display = (modo === "tarifa_base") ? "block" : "none";
+        }
+
+        document.querySelectorAll('input[name="modo"]').forEach((radio) => {
+            radio.addEventListener('change', () => {
+                toggleCamposAdicionales(radio.value);
+            });
+        });
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const activo = document.querySelector('input[name="modo"]:checked');
+            if (activo) toggleCamposAdicionales(activo.value);
+        });
+    </script>
+
+    <footer class="footer">
+        © CONVIASA RIF. G-20007774-3 Todos los derechos reservados.
+        <span>Desarrollado por la Oficina de Tecnología de la Información y la Comunicación. (OTIC)</span>
+        <div class="redes-sociales">
+            <a href="https://www.facebook.com/LAConviasa/" target="_blank" rel="noopener noreferrer">
+                <img src="{% static 'calculadora/iconos/facebook.png'%}" alt="Facebook" width="24" height="24">
+            </a>
+            <a href="https://www.instagram.com/LAconviasa/" target="_blank" rel="noopener noreferrer">
+                <img src="{% static 'calculadora/iconos/instagram.png'%}" alt="Instagram" width="24" height="24">
+            </a>
+            <a href="https://twitter.com/LAConviasa" target="_blank" rel="noopener noreferrer">
+                <img src="{% static 'calculadora/iconos/x.png'%}" alt="X" width="24" height="24">
+            </a>
+            <a href="https://www.youtube.com/user/LAconviasa" target="_blank" rel="noopener noreferrer">
+                <img src="{% static 'calculadora/iconos/youtube.png'%}" alt="YouTube" width="24" height="24">
+            </a>
+        </div>
+    </footer>
+</body>
+
+</html>

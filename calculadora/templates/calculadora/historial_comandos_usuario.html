@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block title %}Historial de Comandos de {{ usuario.username }}{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-10">
+            <div class="card border-0 shadow-lg">
+                <div class="card-header text-white text-center"
+                    style="background: linear-gradient(to right, #FF8C00, #ffa94d);">
+                    <h4 class="mb-0"><i class="fas fa-history me-2"></i>Historial de Comandos de {{ usuario.username }}
+                    </h4>
+                </div>
+                <div class="card-body bg-white px-4 py-3">
+                    <div class="table-responsive">
+                        <form method="get" class="mb-3 d-flex justify-content-end">
+                            <input type="date" name="fecha" class="form-control form-control-sm me-2"
+                                value="{{ fecha_filtro }}">
+                            <button type="submit" class="btn btn-sm btn-outline-warning">Filtrar</button>
+                            {% if fecha_filtro %}
+                            <a href="?page=1" class="btn btn-sm btn-outline-secondary ms-2">Quitar filtro</a>
+                            {% endif %}
+                        </form>
+                        <table class="table table-striped table-hover align-middle text-center">
+                            <thead class="table-warning text-dark">
+                                <tr>
+                                    <th style="width: 5%;">#</th>
+                                    <th style="width: 70%;">Comando</th>
+                                    <th style="width: 20%;">Fecha</th>
+                                    <th style="width: 5%;">Hora</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for historial in historiales %}
+                                <tr>
+                                    <td class="fw-bold">{{ forloop.counter0|add:historiales.start_index }}</td>
+                                    <td class="text-break">{{ historial.comando }}</td>
+                                    <td>{{ historial.fecha }}</td>
+                                    <td>{{ historial.hora }}</td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="4" class="text-muted text-center">No hay comandos registrados para este
+                                        usuario.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    {% if historiales.has_other_pages %}
+                    <div class="d-flex justify-content-center mt-4">
+                        <nav>
+                            <ul class="pagination pagination-sm">
+                                {% if historiales.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link"
+                                        href="?page={{ historiales.previous_page_number }}{% if fecha_filtro %}&fecha={{ fecha_filtro }}{% endif %}">«
+                                        Anterior</a>
+                                </li>
+                                {% endif %}
+
+                                {% with current=historiales.number total=historiales.paginator.num_pages %}
+                                    {% for num in historiales.paginator.page_range %}
+                                        {% if num >= current|add:"-2" and num <= current|add:"2" %}
+                                        <li class="page-item {% if current == num %}active{% endif %}">
+                                            <a class="page-link"
+                                                href="?page={{ num }}{% if fecha_filtro %}&fecha={{ fecha_filtro }}{% endif %}">{{ num }}</a>
+                                        </li>
+                                        {% endif %}
+                                    {% endfor %}
+                                {% endwith %}
+
+                                {% if historiales.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link"
+                                        href="?page={{ historiales.next_page_number }}{% if fecha_filtro %}&fecha={{ fecha_filtro }}{% endif %}">Siguiente
+                                        »</a>
+                                </li>
+                                {% endif %}
+                            </ul>
+                        </nav>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="card-footer d-flex justify-content-between bg-light border-top">
+                    <a href="{% url 'usuarios_lista' %}" class="btn btn-sm text-white"
+                        style="background-color: #FF8C00;">
+                        ⬅ Volver a la lista de usuarios
+                    </a>
+                    <span class="text-muted small align-self-center">Mostrando {{ historiales|length }} registros</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,207 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Iniciar Sesión | SCEE</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+        integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+        integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-image: url("{% static 'calculadora/fondo.png' %}");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .login-container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 10px 10px 10px 10px rgba(0, 0, 0, 0.2);
+            width: 70%;
+            height: 70%;
+            opacity: 0.9;
+            display: flex;
+        }
+
+        .login-left {
+            flex: 0 0 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .login-right {
+            flex: 0 0 50%;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        h2 {
+            color: #FF8C00;
+            margin-bottom: 25px;
+            text-align: center;
+            width: 80%;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            width: 80%;
+            position: relative;
+            /* Necesario para el posicionamiento absoluto del icono */
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            /* Espaciado entre la etiqueta y el input */
+            color: #333;
+            font-weight: bold;
+            font-size: 1rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px 10px 10px 40px;
+            /* Aseguramos que haya espacio para los iconos */
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        /* Contenedor para el icono y el input */
+        .input-container {
+            position: relative;
+            /* Esto es necesario para que el icono se posicione dentro del input */
+        }
+
+        /* Iconos dentro de los campos */
+        .input-icon {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            /* Centra verticalmente el icono */
+            font-size: 1.2rem;
+            /* Ajusta el tamaño del icono */
+            color: #6c757d;
+        }
+
+        .btn-primary {
+            background-color: #FF8C00;
+            border-color: #FF8C00;
+            padding: 10px 20px;
+            font-size: 1rem;
+            border-radius: 0.25rem;
+            cursor: pointer;
+        }
+
+        .btn-primary:hover {
+            background-color: #e67600;
+            border-color: #e67600;
+        }
+
+        .alert {
+            margin-bottom: 15px;
+            width: 80%;
+            text-align: center;
+        }
+
+        .button-group {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="login-container">
+        <div class="login-left">
+            <div>
+                <h3>SCEE CONVIASA <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                        class="bi bi-airplane" viewBox="0 0 16 16">
+                        <path
+                            d="M6.428 1.151C6.708.591 7.213 0 8 0s1.292.592 1.572 1.151C9.861 1.73 10 2.431 10 3v3.691l5.17 2.585a1.5 1.5 0 0 1 .83 1.342V12a.5.5 0 0 1-.582.493l-5.507-.918-.375 2.253 1.318 1.318A.5.5 0 0 1 10.5 16h-5a.5.5 0 0 1-.354-.854l1.319-1.318-.376-2.253-5.507.918A.5.5 0 0 1 0 12v-1.382a1.5 1.5 0 0 1 .83-1.342L6 6.691V3c0-.568.14-1.271.428-1.849m.894.448C7.111 2.02 7 2.569 7 3v4a.5.5 0 0 1-.276.447l-5.448 2.724a.5.5 0 0 0-.276.447v.792l5.418-.903a.5.5 0 0 1 .575.41l.5 3a.5.5 0 0 1-.14.437L6.708 15h2.586l-.647-.646a.5.5 0 0 1-.14-.436l.5-3a.5.5 0 0 1 .576-.411L15 11.41v-.792a.5.5 0 0 0-.276-.447L9.276 7.447A.5.5 0 0 1 9 7V3c0-.432-.11-.979-.322-1.401C8.458 1.159 8.213 1 8 1s-.458.158-.678.599" />
+                    </svg></h3>
+                <img src="{% static 'calculadora/portadalogin2.jpg' %}" alt="Avion CONVIASA" class="img-fluid"
+                    style="max-width: 80%; border-radius: 10px;">
+                <hr>
+                <footer class="footer">
+                    © CONVIASA RIF. G-20007774-3 Todos los derechos reservados.
+                    <span>
+                        Desarrollado por la Oficina de Tecnología de la Información y la Comunicación. (OTIC)
+                    </span>
+                </footer>
+            </div>
+        </div>
+        <div class="login-right">
+            <h2 class="mb-4">Iniciar Sesión</h2>
+
+            {% if messages %}
+            {% for message in messages %}
+            <div class="alert alert-danger">{{ message }}</div>
+            {% endfor %}
+            {% endif %}
+
+            <form method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="{{ form.username.id_for_label }}">
+                        Usuario
+                    </label>
+                    <div class="input-container">
+                        <i class="fas fa-user input-icon"></i>
+                        <input type="text" name="username" id="{{ form.username.id_for_label }}" class="form-control"
+                            placeholder="Ingrese su usuario" value="{{ form.username.value|default:'' }}">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="{{ form.password.id_for_label }}">
+                        Contraseña
+                    </label>
+                    <div class="input-container">
+                        <i class="fas fa-lock input-icon"></i>
+                        <input type="password" name="password" id="{{ form.password.id_for_label }}"
+                            class="form-control" placeholder="Ingrese su contraseña"
+                            value="{{ form.password.value|default:'' }}">
+                    </div>
+                </div>
+                <div class="button-group">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"
+        integrity="sha384-eMNCOe7tC1doHpGoWe/6oMVemdAVTMs2xqW4mwXrXsW0L84iy+eqPG5czFbyD+xjPdgetG2056jv"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
+        integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>

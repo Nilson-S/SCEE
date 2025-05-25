@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block title %}Lista de Usuarios{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-10">
+            <div class="card shadow-sm border-0">
+                <div class="card-header text-white text-center" style="background-color: #FF8C00;">
+                    <h4 class="mb-0">Usuarios Registrados</h4>
+                </div>
+                <div class="card-body p-0 bg-white">
+                    <div class="table-responsive">
+                        <table class="table table-bordered m-0">
+                            <thead style="background-color: #fff3e0; color: #555; border-radius: 10px;">
+                                <tr class="text-center">
+                                    <th>Nombre de Usuario</th>
+                                    <th>Correo</th>
+                                    <th>Superusuario</th>
+                                    <th>Activo</th>
+                                    <th>Historial de Comandos</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for u in usuarios %}
+                                <tr class="text-center align-middle">
+                                    <td>{{ u.username }}</td>
+                                    <td>{{ u.email }}</td>
+                                    <td>
+                                        {% if u.is_superuser %}
+                                        <span class="text-success">Sí</span>
+                                        {% if request.user != u %}
+                                        <a href="{% url 'quitar_superusuario' u.id %}"
+                                            class="btn btn-sm btn-outline-danger ms-2">Quitar</a>
+                                        {% endif %}
+                                        {% else %}
+                                        <a href="{% url 'hacer_superusuario' u.id %}"
+                                            class="btn btn-sm btn-outline-primary">Asignar</a>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if u.is_active %}
+                                        <span class="text-success">Sí</span>
+                                        {% if request.user != u %}
+                                        <a href="{% url 'inhabilitar_usuario' u.id %}"
+                                            class="btn btn-sm btn-outline-danger ms-2">Inhabilitar</a>
+                                        {% endif %}
+                                        {% else %}
+                                        <span class="text-danger">No</span>
+                                        <a href="{% url 'reactivar_usuario' u.id %}"
+                                            class="btn btn-sm btn-outline-success ms-2">Reactivar</a>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <!-- Enlace corregido -->
+                                        <a href="{% url 'historial_comandos_usuario' u.id %}"
+                                            class="btn btn-sm btn-outline-info">Ver Historial</a>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="5" class="text-center text-muted">No hay usuarios registrados.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card-footer d-flex justify-content-between bg-light">
+                    <a href="{% url 'usuarios_crear' %}" class="btn text-white" style="background-color: #FF8C00;">Crear
+                        nuevo usuario</a>
+                    <a href="{% url 'ver_tasas' %}" class="btn btn-outline-secondary"> Ver historial de tasas</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
